@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.codeurjc.board.model.Comment;
+import es.codeurjc.board.model.CommentMongo;
 import es.codeurjc.board.model.Post;
 import es.codeurjc.board.repository.CommentRepository;
 import es.codeurjc.board.repository.MongoCommentRepository;
@@ -118,7 +119,10 @@ public class PostController {
 		comment.setPost(post);
 		comments.save(comment);
 
-		mongoComments.save(comment);
+		CommentMongo commentMongo = new CommentMongo();
+		commentMongo.setComment(comment.getComment());
+		commentMongo.setUsername(comment.getUsername());
+		mongoComments.save(commentMongo);
 
 		URI location = fromCurrentRequest().path("/{id}").buildAndExpand(comment.getId()).toUri();
 
