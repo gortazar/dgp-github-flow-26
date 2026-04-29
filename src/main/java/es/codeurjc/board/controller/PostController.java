@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import es.codeurjc.board.model.Comment;
 import es.codeurjc.board.model.Post;
 import es.codeurjc.board.repository.CommentRepository;
+import es.codeurjc.board.repository.MongoCommentRepository;
 import es.codeurjc.board.service.SmartPostService;
 import io.getunleash.Unleash;
 
@@ -36,10 +37,13 @@ public class PostController {
 
 	private SmartPostService postService;
 
-	public PostController(CommentRepository comments, Unleash unleash, SmartPostService postService) {
+	private MongoCommentRepository mongoComments;
+
+	public PostController(CommentRepository comments, Unleash unleash, SmartPostService postService, MongoCommentRepository mongoComments) {
 		this.comments = comments;
 		this.unleash = unleash;
 		this.postService = postService;
+		this.mongoComments = mongoComments;
 	}
 	
 	@PostConstruct
@@ -113,6 +117,8 @@ public class PostController {
 
 		comment.setPost(post);
 		comments.save(comment);
+
+		mongoComments.save(comment);
 
 		URI location = fromCurrentRequest().path("/{id}").buildAndExpand(comment.getId()).toUri();
 
